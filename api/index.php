@@ -31,6 +31,19 @@ if (isset($_SERVER['USER'])&&$_SERVER['USER']==='qcloud') {
     }
     http_response_code($re['statusCode']);
     echo $re['body'];
+} elseif (isset($_SERVER['DOCUMENT_ROOT'])&&$_SERVER['DOCUMENT_ROOT']==='/var/task/user') {
+    include 'platform/Vercel.php';
+    $path = getpath();
+    //echo 'path:'. $path;
+    $_GET = getGET();
+    //echo '<pre>'. json_encode($_GET, JSON_PRETTY_PRINT).'</pre>';
+    $re = main($path);
+    $sendHeaders = array();
+    foreach ($re['headers'] as $headerName => $headerVal) {
+        header($headerName . ': ' . $headerVal, true);
+    }
+    http_response_code($re['statusCode']);
+    echo $re['body'];
 } else {
     include 'platform/Normal.php';
     $path = getpath();
