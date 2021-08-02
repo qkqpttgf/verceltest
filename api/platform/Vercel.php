@@ -1,4 +1,6 @@
 <?php
+// https://vercel.com/docs/api#endpoints/deployments/create-a-new-deployment
+
 
 function getpath()
 {
@@ -146,46 +148,67 @@ function setConfig($arr, $disktag = '')
 function install()
 {
     global $constStr;
-    if ($_GET['install2']) {
+    if ($_GET['install1']) {
         if ($_POST['admin']!='') {
             $tmp['admin'] = $_POST['admin'];
-            //$tmp['language'] = $_COOKIE['language'];
+            //$tmp['language'] = $_POST['language'];
             $tmp['timezone'] = $_COOKIE['timezone'];
-            $response = setConfigResponse( setConfig($tmp) );
+            $APIKey = getConfig('APIKey');
+            if ($APIKey=='') {
+                $APIKey = $_POST['APIKey'];
+                $tmp['APIKey'] = $APIKey;
+            }
+            $HerokuappId = getConfig('HerokuappId');
+            if ($HerokuappId=='') {
+                $function_name = getConfig('function_name');
+                if ($function_name=='') {
+                    $tmp1 = substr($_SERVER['HTTP_HOST'], 0, strrpos($_SERVER['HTTP_HOST'], '.'));
+                    $maindomain = substr($tmp1, strrpos($tmp1, '.')+1);
+                    if ($maindomain=='herokuapp') $function_name = substr($tmp1, 0, strrpos($tmp1, '.'));
+                    else return message('Please visit from xxxx.herokuapp.com', '', 500);
+                    $res = HerokuAPI('GET', 'https://api.heroku.com/apps/' . $function_name, '', $APIKey);
+                    $response = json_decode($res['body'], true);
+                    if (isset($response['build_stack'])) {
+                        $HerokuappId = $response['id'];
+                    } else {
+                        return message('Get Heroku app id: ' . json_encode($res, JSON_PRETTY_PRINT), 'Something error', 500);
+                    }
+                }
+            }
+            $tmp['HerokuappId'] = $HerokuappId;
+            $response = json_decode(setHerokuConfig($tmp, $HerokuappId, $APIKey)['body'], true);
             if (api_error($response)) {
                 $html = api_error_msg($response);
                 $title = 'Error';
-                return message($html, $title, 201);
             } else {
                 return output('Jump
-            <script>
-                var expd = new Date();
-                expd.setTime(expd.getTime()+(2*60*60*1000));
-                var expires = "expires="+expd.toGMTString();
-                document.cookie=\'language=; path=/; \'+expires;
-            </script>
-            <meta http-equiv="refresh" content="3;URL=' . path_format($_SERVER['base_path'] . '/') . '">', 302);
+    <script>
+        var expd = new Date();
+        expd.setTime(expd.getTime()+1000);
+        var expires = "expires="+expd.toGMTString();
+        document.cookie=\'language=; path=/; \'+expires;
+    </script>
+    <meta http-equiv="refresh" content="3;URL=' . path_format($_SERVER['base_path'] . '/') . '">', 302);
             }
+            return message($html, $title, 201);
         }
     }
-    if ($_GET['install1']) {
-        if (!ConfigWriteable()) {
-            $html .= getconstStr('MakesuerWriteable');
-            $title = 'Error';
-            return message($html, $title, 201);
+    if ($_GET['install0']) {
+        $html .= '
+    <form action="?install1" method="post" onsubmit="return notnull(this);">
+language:<br>';
+        foreach ($constStr['languages'] as $key1 => $value1) {
+            $html .= '
+        <label><input type="radio" name="language" value="'.$key1.'" '.($key1==$constStr['language']?'checked':'').' onclick="changelanguage(\''.$key1.'\')">'.$value1.'</label><br>';
         }
-        /*if (!RewriteEngineOn()) {
-            $html .= getconstStr('MakesuerRewriteOn');
-            $title = 'Error';
-            return message($html, $title, 201);
-        }*/
-        $html .= '<button id="checkrewritebtn" onclick="checkrewrite();">'.getconstStr('MakesuerRewriteOn').'</button>
-<div id="formdiv" style="display: none">
-    <form action="?install2" method="post" onsubmit="return notnull(this);">
-        <input name="admin" type="password" placeholder="' . getconstStr('EnvironmentsDescription')['admin'] . '" size="' . strlen(getconstStr('EnvironmentsDescription')['admin']) . '"><br>
-        <input id="submitbtn" type="submit" value="'.getconstStr('Submit').'" disabled>
+        if (getConfig('APIKey')=='') $html .= '
+        <a href="https://vercel.com/account/tokens" target="_blank">' . getconstStr('Create') . ' token</a><br>
+        <label>Token:<input name="APIKey" type="text" placeholder="" size=""></label><br>';
+        $html .= '
+        <label>Set admin password:<input name="admin" type="password" placeholder="' . getconstStr('EnvironmentsDescription')['admin'] . '" size="' . strlen(getconstStr('EnvironmentsDescription')['admin']) . '"></label><br>';
+        $html .= '
+        <input type="submit" value="'.getconstStr('Submit').'">
     </form>
-</div>
     <script>
         var nowtime= new Date();
         var timezone = 0-nowtime.getTimezoneOffset()/60;
@@ -193,53 +216,6 @@ function install()
         expd.setTime(expd.getTime()+(2*60*60*1000));
         var expires = "expires="+expd.toGMTString();
         document.cookie="timezone="+timezone+"; path=/; "+expires;
-        function notnull(t)
-        {
-            if (t.admin.value==\'\') {
-                alert(\''.getconstStr('SetAdminPassword').'\');
-                return false;
-            }
-            return true;
-        }
-        function checkrewrite()
-        {
-            url=location.protocol + "//" + location.host;
-            //if (location.port!="") url += ":" + location.port;
-            url += location.pathname;
-            if (url.substr(-1)!="/") url += "/";
-            url += "app.json";
-            url += "?" + Date.now();
-            var xhr4 = new XMLHttpRequest();
-            xhr4.open("GET", url);
-            xhr4.setRequestHeader("x-requested-with","XMLHttpRequest");
-            xhr4.send(null);
-            xhr4.onload = function(e){
-                console.log(xhr4.responseText+","+xhr4.status);
-                if (xhr4.status==201) {
-                    document.getElementById("checkrewritebtn").style.display = "none";
-                    document.getElementById("submitbtn").disabled = false;
-                    document.getElementById("formdiv").style.display = "";
-                } else {
-                    alert("Url: " + url + "\nExpect http code 201, but received " + xhr4.status);
-                }
-            }
-        }
-    </script>';
-        $title = getconstStr('SetAdminPassword');
-        return message($html, $title, 201);
-    }
-    if ($_GET['install0']) {
-        $html .= '
-    <form action="?install1" method="post">
-language:<br>';
-        foreach ($constStr['languages'] as $key1 => $value1) {
-            $html .= '
-        <label><input type="radio" name="language" value="'.$key1.'" '.($key1==$constStr['language']?'checked':'').' onclick="changelanguage(\''.$key1.'\')">'.$value1.'</label><br>';
-        }
-        $html .= '
-        <input type="submit" value="'.getconstStr('Submit').'">
-    </form>
-    <script>
         function changelanguage(str)
         {
             var expd = new Date();
@@ -247,6 +223,20 @@ language:<br>';
             var expires = "expires="+expd.toGMTString();
             document.cookie=\'language=\'+str+\'; path=/; \'+expires;
             location.href = location.href;
+        }
+        function notnull(t)
+        {
+            if (t.admin.value==\'\') {
+                alert(\'input admin\');
+                return false;
+            }';
+        if (getConfig('APIKey')=='') $html .= '
+            if (t.APIKey.value==\'\') {
+                alert(\'input API Key\');
+                return false;
+            }';
+        $html .= '
+            return true;
         }
     </script>';
         $title = getconstStr('SelectLanguage');
