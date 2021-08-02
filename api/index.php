@@ -1,12 +1,12 @@
 <?php
-error_reporting(E_ALL & ~E_NOTICE);
-//error_reporting(0);
+//error_reporting(E_ALL & ~E_NOTICE);
+error_reporting(0);
 include 'vendor/autoload.php';
 include 'conststr.php';
 include 'common.php';
 
-echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
-echo '<pre>'. json_encode($_ENV, JSON_PRETTY_PRINT).'</pre>';
+//echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
+//echo '<pre>'. json_encode($_ENV, JSON_PRETTY_PRINT).'</pre>';
 if (isset($_SERVER['USER'])&&$_SERVER['USER']==='qcloud') {
     if (getenv('ONEMANAGER_CONFIG_SAVE')=='file') include 'platform/TencentSCF_file.php';
     else include 'platform/TencentSCF_env.php';
@@ -44,6 +44,8 @@ if (isset($_SERVER['USER'])&&$_SERVER['USER']==='qcloud') {
     }
     http_response_code($re['statusCode']);
     echo $re['body'];
+    echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
+    echo '<pre>'. json_encode($_ENV, JSON_PRETTY_PRINT).'</pre>';
 } else {
     include 'platform/Normal.php';
     $path = getpath();
