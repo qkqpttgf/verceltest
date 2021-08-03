@@ -270,7 +270,7 @@ function setVercelConfig($envs, $appId, $token)
 		$data["env"][$key] = $value;
 	}
 	//$data["env"] = $tmpenv;
-	echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
+	//echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
 }
@@ -283,6 +283,7 @@ function getEachFiles(&$file, $base, $path = "")
     while($filename=readdir($handler)) {
         if($filename != '.' && $filename != '..'){
             $fromfile = path_format($base . "/" . $path . "/" . $filename);
+		echo $fromfile . "<br>";
             if(is_dir($fromfile)){// 如果读取的某个对象是文件夹，则递归
                 $response = getEachFiles($file, $base, path_format($path . "/" . $filename));
                 if (api_error(setConfigResponse($response))) return $response;
