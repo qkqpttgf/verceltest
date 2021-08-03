@@ -260,7 +260,7 @@ function setVercelConfig($envs, $appId, $token)
 		$data["target"] = "production";
 	getEachFiles($file, splitlast(splitlast(__DIR__, "/")[0], "/")[0]);
 	$data["files"] = $file;
-	$tmpbuildenv = null;
+	//$tmpbuildenv = null;
 	foreach ($envs as $key => $value) {
 		//$tmp = null;
 		//$tmp["type"] = "encrypted";
@@ -269,9 +269,10 @@ function setVercelConfig($envs, $appId, $token)
 		//$tmp["target"] = [ "development", "production", "preview" ];
 		//$tmpenv[] = $tmp;
 		$data["env"][$key] = $value;
-		$tmpbuildenv[] = $key;
+		$data["build"]["env"][$key] = $value;
+		//$tmpbuildenv[] = $key;
 	}
-	$data["build"]["env"] = $tmpbuildenv;
+	//$data["build"]["env"] = $tmpbuildenv;
 	//echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
