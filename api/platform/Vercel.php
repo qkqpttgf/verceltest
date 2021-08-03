@@ -259,18 +259,18 @@ function setVercelConfig($envs, $appId, $token)
 	$data["project"] = $appId;
 	getEachFiles($file, splitlast(splitlast(__DIR__, "/")[0], "/")[0]);
 	$data["files"] = $file;
-	//$tmpenv = null;
+	$tmpenv = null;
 	foreach ($envs as $key => $value) {
-		//$tmp = null;
-		//$tmp["type"] = "encrypted";
-		//  $tmp["key"] = $key;
-		//$tmp["value"] = $value;
-		//$tmp["target"] = [ "development", "production", "preview" ];
-		//$tmpenv[] = $tmp;
-		$data["env"][$key] = $value;
+		$tmp = null;
+		$tmp["type"] = "encrypted";
+		  $tmp["key"] = $key;
+		$tmp["value"] = $value;
+		$tmp["target"] = [ "development", "production", "preview" ];
+		$tmpenv[] = $tmp;
+		//$data["env"][$key] = $value;
 	}
-	//$data["env"] = $tmpenv;
-	echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
+	$data["env"] = $tmpenv;
+	//echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
 }
@@ -283,7 +283,7 @@ function getEachFiles(&$file, $base, $path = "")
     while($filename=readdir($handler)) {
         if($filename != '.' && $filename != '..' && $filename != '.git'){
             $fromfile = path_format($base . "/" . $path . "/" . $filename);
-		echo $fromfile . "<br>";
+		//echo $fromfile . "<br>";
             if(is_dir($fromfile)){// 如果读取的某个对象是文件夹，则递归
                 $response = getEachFiles($file, $base, path_format($path . "/" . $filename));
                 if (api_error(setConfigResponse($response))) return $response;
