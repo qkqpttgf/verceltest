@@ -178,7 +178,7 @@ function install()
                 $html = api_error_msg($response);
                 $title = 'Error';
             } else {
-                return output('Jump
+                return output('<span id="displayBox"></span>
     <script>
         var expd = new Date();
         expd.setTime(expd.getTime()+1000);
@@ -188,7 +188,7 @@ function install()
 	function countSecond() 
 	{　
 	    x--;
-	    document.getElementById("displayBox").value=x;
+	    document.getElementById("displayBox").innerHTML = x;
 	    if (x>0) setTimeout("countSecond()", 1000);
 	}
 	// 执行函数
