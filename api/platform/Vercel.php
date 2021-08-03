@@ -242,6 +242,7 @@ language:<br>';
         $title = getconstStr('SelectLanguage');
         return message($html, $title, 201);
     }
+	if (substr($_SERVER["host"], -10)=="vercel.app") {
     $html .= '<a href="?install0">' . getconstStr('ClickInstall') . '</a>, ' . getconstStr('LogintoBind');
 	$html .= "<br>Remember: you MUST wait 30-60s after each operate / do some change, that make sure Vercel has done the building<br>" ;
 	$projectPath = splitlast(__DIR__, "/")[0];
@@ -249,7 +250,15 @@ language:<br>';
 	$token = "31659zyZwG5sAChFK5uo2cl2";
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
-	$html .= curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'];
+		$aliases = curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'];
+		$host = splitfirst($_SERVER["host"], "/")[1];
+		foreach ($aliases["aliases"] as $aliase) {
+			if ($host==$aliase["alias"]) $projectId = $aliase["projectId"];
+		}
+	$html .= $projectId;
+	} else {
+		$html.= "Please visit form *.vercel.app";
+	}
     $title = 'Install';
     return message($html, $title, 201);
 }
