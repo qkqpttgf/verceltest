@@ -269,6 +269,7 @@ function setVercelConfig($envs, $appId, $token)
 		//$tmp["target"] = [ "development", "production", "preview" ];
 		//$tmpenv[] = $tmp;
 		$data["env"][$key] = $value;
+		$data["build"]["env"][] = $key;
 	}
 	//$data["env"] = $tmpenv;
 	//echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
