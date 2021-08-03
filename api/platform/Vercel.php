@@ -251,7 +251,7 @@ language:<br>';
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
 		$aliases = json_decode(curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'], true);
-		$host = splitfirst($_SERVER["host"], "/")[1];
+		$host = splitfirst($_SERVER["host"], "//")[1];
 		foreach ($aliases["aliases"] as $key => $aliase) {
 			if ($host==$aliase["alias"]) $projectId = $aliase["projectId"];
 		}
