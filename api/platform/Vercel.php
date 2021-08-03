@@ -252,7 +252,7 @@ language:<br>';
 	$header["Content-Type"] = "application/json";
 		$aliases = json_decode(curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'], true);
 		$host = splitfirst($_SERVER["host"], "/")[1];
-		foreach ($aliases["aliases"] as $aliase) {
+		foreach ($aliases["aliases"] as $key => $aliase) {
 			if ($host==$aliase["alias"]) $projectId = $aliase["projectId"];
 		}
 	$html .= $projectId;
@@ -272,7 +272,7 @@ function setVercelConfig($envs, $appId, $token)
 	$data["project"] = $appId;
 	getEachFiles($file, splitlast(__DIR__, "/")[0]);
 	$data["files"] = $file;
-	foreach ($envs as $key -> $value) {
+	foreach ($envs as $key => $value) {
 		$tmp = null;
 		$tmp["type"] = "encrypted";
 		  $tmp["key"] = $key;
