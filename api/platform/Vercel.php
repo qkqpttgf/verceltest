@@ -243,8 +243,8 @@ language:<br>';
         return message($html, $title, 201);
     }
     $html .= '<a href="?install0">' . getconstStr('ClickInstall') . '</a>, ' . getconstStr('LogintoBind');
-	$html .= "<br>Remember: you MUST wait 30-60s after each operate / do some change, that make sure Vercel has done the building" ;
-	$html .= file_get_contents(".data/config.php");
+	$html .= "<br>Remember: you MUST wait 30-60s after each operate / do some change, that make sure Vercel has done the building<br>" ;
+	$html .= file_get_contents(".data/config.php") . "<br>";
     $title = 'Install';
     return message($html, $title, 201);
 }
