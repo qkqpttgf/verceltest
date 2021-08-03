@@ -158,37 +158,34 @@ function install()
                 $APIKey = $_POST['APIKey'];
                 $tmp['APIKey'] = $APIKey;
             }
-            $HerokuappId = getConfig('HerokuappId');
-            if ($HerokuappId=='') {
-                $function_name = getConfig('function_name');
-                if ($function_name=='') {
-                    $tmp1 = substr($_SERVER['HTTP_HOST'], 0, strrpos($_SERVER['HTTP_HOST'], '.'));
-                    $maindomain = substr($tmp1, strrpos($tmp1, '.')+1);
-                    if ($maindomain=='herokuapp') $function_name = substr($tmp1, 0, strrpos($tmp1, '.'));
-                    else return message('Please visit from xxxx.herokuapp.com', '', 500);
-                    $res = HerokuAPI('GET', 'https://api.heroku.com/apps/' . $function_name, '', $APIKey);
-                    $response = json_decode($res['body'], true);
-                    if (isset($response['build_stack'])) {
-                        $HerokuappId = $response['id'];
-                    } else {
-                        return message('Get Heroku app id: ' . json_encode($res, JSON_PRETTY_PRINT), 'Something error', 500);
-                    }
-                }
-            }
-            $tmp['HerokuappId'] = $HerokuappId;
-            $response = json_decode(setVercelConfig($tmp, $HerokuappId, $APIKey)['body'], true);
+            
+		$projectPath = splitlast(__DIR__, "/")[0];
+    //$html .= file_get_contents($projectPath . "/.data/config.php") . "<br>";GET /v5/now/deployments  /v8/projects/:id/env
+	//$token = "31659zyZwG5sAChFK5uo2cl2";
+		$token = $tmp['APIKey'];
+	$header["Authorization"] = "Bearer " . $token;
+	$header["Content-Type"] = "application/json";
+		$aliases = json_decode(curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'], true);
+		$host = splitfirst($_SERVER["host"], "//")[1];
+		foreach ($aliases["aliases"] as $key => $aliase) {
+			if ($host==$aliase["alias"]) $projectId = $aliase["projectId"];
+		}
+		//$envs = json_decode(curl("GET", "https://api.vercel.com/v8/projects/" . $projectId . "/env", "", $header)['body'], true);
+		
+            $tmp['HerokuappId'] = $projectId;
+            $response = json_decode(setVercelConfig($tmp, $projectId, $APIKey)['body'], true);
             if (api_error($response)) {
                 $html = api_error_msg($response);
                 $title = 'Error';
             } else {
-                return output('Jump
+                return output(json_encode($response) . 'Jump
     <script>
         var expd = new Date();
         expd.setTime(expd.getTime()+1000);
         var expires = "expires="+expd.toGMTString();
         document.cookie=\'language=; path=/; \'+expires;
     </script>
-    <meta http-equiv="refresh" content="3;URL=' . path_format($_SERVER['base_path'] . '/') . '">', 302);
+    ', 302);//<meta http-equiv="refresh" content="3;URL=' . path_format($_SERVER['base_path'] . '/') . '">
             }
             return message($html, $title, 201);
         }
@@ -242,20 +239,10 @@ language:<br>';
         $title = getconstStr('SelectLanguage');
         return message($html, $title, 201);
     }
+
 	if (substr($_SERVER["host"], -10)=="vercel.app") {
     $html .= '<a href="?install0">' . getconstStr('ClickInstall') . '</a>, ' . getconstStr('LogintoBind');
 	$html .= "<br>Remember: you MUST wait 30-60s after each operate / do some change, that make sure Vercel has done the building<br>" ;
-	$projectPath = splitlast(__DIR__, "/")[0];
-    //$html .= file_get_contents($projectPath . "/.data/config.php") . "<br>";GET /v5/now/deployments
-	$token = "31659zyZwG5sAChFK5uo2cl2";
-	$header["Authorization"] = "Bearer " . $token;
-	$header["Content-Type"] = "application/json";
-		$aliases = json_decode(curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'], true);
-		$host = splitfirst($_SERVER["host"], "//")[1];
-		foreach ($aliases["aliases"] as $key => $aliase) {
-			if ($host==$aliase["alias"]) $projectId = $aliase["projectId"];
-		}
-	$html .= $projectId;
 	} else {
 		$html.= "Please visit form *.vercel.app";
 	}
