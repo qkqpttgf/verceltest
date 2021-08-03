@@ -267,7 +267,7 @@ function setVercelConfig($envs, $appId, $token)
 		$tmp["target"] = [ "development", "production", "preview" ];
 		$data["env"][] = $tmp;
 	}
-	$response = curl("POST", $url, $data, $header);
+	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
 }
 
