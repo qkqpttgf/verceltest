@@ -261,7 +261,7 @@ function setVercelConfig($envs, $appId, $token)
 	$header["Content-Type"] = "application/json";
 	$data["name"] = "verceltest";
 	$data["project"] = $appId;
-	getEachFiles(&$file, splitlast(__DIR__, "/")[0]);
+	getEachFiles($file, splitlast(__DIR__, "/")[0]);
 	$data["files"] = $file;
 	foreach ($envs as $key -> $value) {
 		$tmp = null;
