@@ -141,7 +141,7 @@ function setConfig($arr, $disktag = '')
     }
     foreach ($tmp as $key => $val) if ($val=='') $tmp[$key]=null;
 
-    return setHerokuConfig($tmp, getConfig('HerokuappId'), getConfig('APIKey'));
+    return setVercelConfig($tmp, getConfig('HerokuappId'), getConfig('APIKey'));
     error_log1(json_encode($arr, JSON_PRETTY_PRINT) . ' => tmp：' . json_encode($tmp, JSON_PRETTY_PRINT));
 }
 
@@ -176,7 +176,7 @@ function install()
                 }
             }
             $tmp['HerokuappId'] = $HerokuappId;
-            $response = json_decode(setHerokuConfig($tmp, $HerokuappId, $APIKey)['body'], true);
+            $response = json_decode(setVercelConfig($tmp, $HerokuappId, $APIKey)['body'], true);
             if (api_error($response)) {
                 $html = api_error_msg($response);
                 $title = 'Error';
@@ -204,7 +204,7 @@ language:<br>';
         if (getConfig('APIKey')=='') $html .= '
         <a href="https://vercel.com/account/tokens" target="_blank">' . getconstStr('Create') . ' token</a><br>
         <label>Token:<input name="APIKey" type="text" placeholder="" size=""></label><br>';
-        $html .= '
+        $html .= '<br>
         <label>Set admin password:<input name="admin" type="password" placeholder="' . getconstStr('EnvironmentsDescription')['admin'] . '" size="' . strlen(getconstStr('EnvironmentsDescription')['admin']) . '"></label><br>';
         $html .= '
         <input type="submit" value="'.getconstStr('Submit').'">
@@ -247,15 +247,12 @@ language:<br>';
     return message($html, $title, 201);
 }
 
-function ConfigWriteable()
+function setVercelConfig($envs, $appId, $token)
 {
-    $t = md5( md5(time()).rand(1000,9999) );
-    $r = setConfig([ 'tmp' => $t ]);
-    $tmp = getConfig('tmp');
-    setConfig([ 'tmp' => '' ]);
-    if ($tmp == $t) return true;
-    if ($r) return true;
-    return false;
+	$url = "https://api.vercel.com/v12/now/deployments";
+	$header["Authorization"] = "Bearer " . $token;
+	$header["Content-Type"] = "application/json";
+    // update ! save to file.
 }
 
 function api_error($response)
