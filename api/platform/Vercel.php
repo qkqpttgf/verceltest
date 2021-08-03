@@ -249,7 +249,7 @@ language:<br>';
 	$token = "31659zyZwG5sAChFK5uo2cl2";
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
-	$html .= curl("GET", "https://api.vercel.com/v5/now/deployments?projectId=dpl_BJb11e9xqYYKMH3xi8TCTk7Cyhjj", "", $header)['body'];
+	$html .= curl("GET", "https://api.vercel.com/v3/now/aliases", "", $header)['body'];
     $title = 'Install';
     return message($html, $title, 201);
 }
