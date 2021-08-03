@@ -258,6 +258,9 @@ function setVercelConfig($envs, $appId, $token)
 	$data["name"] = "verceltest";
 	$data["project"] = $appId;
 		$data["target"] = "production";
+	$data["routes"][0]["src"] = "/(.*)";
+	$data["routes"][0]["dest"] = "/api/index.php";
+	$data["functions"]["api/index.php"]["runtime"] = "vercel-php@0.4.0";
 	getEachFiles($file, splitlast(splitlast(__DIR__, "/")[0], "/")[0]);
 	$data["files"] = $file;
 	//$tmpbuildenv = null;
