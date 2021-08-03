@@ -161,7 +161,6 @@ function install()
             
 		$projectPath = splitlast(__DIR__, "/")[0];
     //$html .= file_get_contents($projectPath . "/.data/config.php") . "<br>";GET /v5/now/deployments  /v8/projects/:id/env
-	//$token = "31659zyZwG5sAChFK5uo2cl2";
 		$token = $tmp['APIKey'];
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
@@ -171,7 +170,7 @@ function install()
 			if ($host==$aliase["alias"]) $projectId = $aliase["projectId"];
 		}
 		//$envs = json_decode(curl("GET", "https://api.vercel.com/v8/projects/" . $projectId . "/env", "", $header)['body'], true);
-		
+
             $tmp['HerokuappId'] = $projectId;
             $response = json_decode(setVercelConfig($tmp, $projectId, $APIKey)['body'], true);
             if (api_error($response)) {
