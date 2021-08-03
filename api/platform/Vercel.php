@@ -259,14 +259,16 @@ function setVercelConfig($envs, $appId, $token)
 	$data["project"] = $appId;
 	getEachFiles($file, splitlast(__DIR__, "/")[0]);
 	$data["files"] = $file;
+	$tmpenv = null;
 	foreach ($envs as $key => $value) {
 		$tmp = null;
 		$tmp["type"] = "encrypted";
 		  $tmp["key"] = $key;
 		$tmp["value"] = $value;
 		$tmp["target"] = [ "development", "production", "preview" ];
-		$data["env"][] = $tmp;
+		$tmpenv[] = $tmp;
 	}
+	$data["env"] = $tmpenv;
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
 }
