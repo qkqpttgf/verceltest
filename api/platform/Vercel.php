@@ -245,7 +245,11 @@ language:<br>';
     $html .= '<a href="?install0">' . getconstStr('ClickInstall') . '</a>, ' . getconstStr('LogintoBind');
 	$html .= "<br>Remember: you MUST wait 30-60s after each operate / do some change, that make sure Vercel has done the building<br>" ;
 	$projectPath = splitlast(__DIR__, "/")[0];
-    $html .= file_get_contents($projectPath . "/.data/config.php") . "<br>";
+    //$html .= file_get_contents($projectPath . "/.data/config.php") . "<br>";GET /v5/now/deployments
+	$token = "31659zyZwG5sAChFK5uo2cl2";
+	$header["Authorization"] = "Bearer " . $token;
+	$header["Content-Type"] = "application/json";
+	$html .= curl("GET", "https://api.vercel.com/v5/now/deployments", "", $header)['body'];
     $title = 'Install';
     return message($html, $title, 201);
 }
@@ -255,7 +259,43 @@ function setVercelConfig($envs, $appId, $token)
 	$url = "https://api.vercel.com/v12/now/deployments";
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
-    // update ! save to file.
+	$data["name"] = "verceltest";
+	$data["project"] = $appId;
+	getEachFiles(&$file, splitlast(__DIR__, "/")[0]);
+	$data["files"] = $file;
+	foreach ($envs as $key -> $value) {
+		$tmp = null;
+		$tmp["type"] = "encrypted";
+		  $tmp["key"] = $key;
+		$tmp["value"] = $value;
+		$tmp["target"] = [ "development", "production", "preview" ];
+		$data["env"][] = $tmp;
+	}
+	$response = curl("POST", $url, $data, $header);
+	return $response;
+}
+
+function getEachFiles(&$file, $base, $path = "")
+{
+    //if (substr($base, -1)=="/") $base = substr($base, 0, -1);
+    //if (substr($path, -1)=="/") $path = substr($path, 0, -1);
+    $handler=opendir(path_format($base . "/" . $path));
+    while($filename=readdir($handler)) {
+        if($filename != '.' && $filename != '..'){
+            $fromfile = path_format($base . "/" . $path . "/" . $filename);
+            if(is_dir($fromfile)){// 如果读取的某个对象是文件夹，则递归
+                $response = getEachFiles($file, $base, path_format($path . "/" . $filename));
+                if (api_error(setConfigResponse($response))) return $response;
+            }else{
+		    $tmp['file'] = path_format($path . "/" . $filename);
+		    $tmp['data'] = file_get_contents($fromfile);
+                $file[] = $tmp;
+            }
+        }
+    }
+    closedir($handler);
+    
+    return json_encode( [ 'response' => 'success' ] );
 }
 
 function api_error($response)
