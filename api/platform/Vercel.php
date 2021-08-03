@@ -257,7 +257,7 @@ function setVercelConfig($envs, $appId, $token)
 	$header["Content-Type"] = "application/json";
 	$data["name"] = "verceltest";
 	$data["project"] = $appId;
-		$data["target"] = "production";
+	$data["target"] = "production";
 	$data["routes"][0]["src"] = "/(.*)";
 	$data["routes"][0]["dest"] = "/api/index.php";
 	$data["functions"]["api/index.php"]["runtime"] = "vercel-php@0.4.0";
@@ -272,7 +272,7 @@ function setVercelConfig($envs, $appId, $token)
 		//$tmp["target"] = [ "development", "production", "preview" ];
 		//$tmpenv[] = $tmp;
 		$data["env"][$key] = $value;
-		$data["build"]["env"][$key] = $value;
+		//$data["build"]["env"][$key] = $value;
 		//$tmpbuildenv[] = $key;
 	}
 	//$data["build"]["env"] = $tmpbuildenv;
