@@ -270,7 +270,7 @@ function setVercelConfig($envs, $appId, $token)
 		$data["env"][$key] = $value;
 	}
 	//$data["env"] = $tmpenv;
-	//echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
+	echo json_encode($file, JSON_PRETTY_PRINT) . "<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
 }
