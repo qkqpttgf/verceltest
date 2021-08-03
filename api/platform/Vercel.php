@@ -265,7 +265,7 @@ function setVercelConfig($envs, $appId, $token)
 		//$tmp["type"] = "encrypted";
 		//  $tmp["key"] = $key;
 		//$tmp["value"] = $value;
-		/$tmp["target"] = [ "development", "production", "preview" ];
+		//$tmp["target"] = [ "development", "production", "preview" ];
 		//$tmpenv[] = $tmp;
 		$data["env"][$key] = $value;
 	}
