@@ -178,14 +178,23 @@ function install()
                 $html = api_error_msg($response);
                 $title = 'Error';
             } else {
-                return output(json_encode($response) . 'Jump
+                return output('Jump
     <script>
         var expd = new Date();
         expd.setTime(expd.getTime()+1000);
         var expires = "expires="+expd.toGMTString();
         document.cookie=\'language=; path=/; \'+expires;
+	x = 30;
+	function countSecond() 
+	{　
+	    x--;
+	    document.getElementById("displayBox").value=x;
+	    if (x>0) setTimeout("countSecond()", 1000);
+	}
+	// 执行函数
+	countSecond();
     </script>
-    ', 302);//<meta http-equiv="refresh" content="3;URL=' . path_format($_SERVER['base_path'] . '/') . '">
+    <meta http-equiv="refresh" content="30;URL=' . path_format($_SERVER['base_path'] . '/') . '">', 302);
             }
             return message($html, $title, 201);
         }
