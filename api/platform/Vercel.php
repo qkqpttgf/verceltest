@@ -257,6 +257,7 @@ function setVercelConfig($envs, $appId, $token)
 	$header["Content-Type"] = "application/json";
 	$data["name"] = "verceltest";
 	$data["project"] = $appId;
+		$data["target"] = "production";
 	getEachFiles($file, splitlast(splitlast(__DIR__, "/")[0], "/")[0]);
 	$data["files"] = $file;
 	//$tmpenv = null;
