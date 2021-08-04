@@ -265,7 +265,7 @@ function setVercelConfig($envs, $appId, $token)
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
 	$response = curl("GET", $url, "", $header);
-	$result = json_decode($response['body']);
+	$result = json_decode($response['body'], true);
 	foreach ($result["envs"] as $key => $value) {
 		$existEnvs[$value["key"]] = $value["id"];
 	}
