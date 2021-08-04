@@ -279,7 +279,7 @@ function setVercelConfig($envs, $appId, $token)
 			if ($value=="") $response = curl("DELETE", $url . "/" . $existEnvs[$key], "", $header);
 			else $response = curl("PATCH", $url . "/" . $existEnvs[$key], json_encode($tmp), $header);
 		} else {
-			$response = curl("POST", $url, json_encode($tmp), $header);
+			if ($value) $response = curl("POST", $url, json_encode($tmp), $header);
 		}
 		echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
 	}
@@ -304,7 +304,7 @@ function VercelUpdate($appId, $token, $sourcePath = "")
 
 	//echo json_encode($data, JSON_PRETTY_PRINT) . "<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
-	return $response;
+	return $response["body"];
 }
 
 function getEachFiles(&$file, $base, $path = "")
@@ -333,7 +333,7 @@ function getEachFiles(&$file, $base, $path = "")
 
 function api_error($response)
 {
-    return isset($response['message']);
+    return isset($response['error']);
 }
 
 function api_error_msg($response)
