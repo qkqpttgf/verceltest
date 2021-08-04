@@ -258,37 +258,6 @@ language:<br>';
     return message($html, $title, 201);
 }
 
-function setVercelConfig1($envs, $appId, $token)
-{
-	$url = "https://api.vercel.com/v12/now/deployments";
-	$header["Authorization"] = "Bearer " . $token;
-	$header["Content-Type"] = "application/json";
-	$data["name"] = "verceltest";
-	$data["project"] = $appId;
-	$data["target"] = "production";
-	$data["routes"][0]["src"] = "/(.*)";
-	$data["routes"][0]["dest"] = "/api/index.php";
-	$data["functions"]["api/index.php"]["runtime"] = "vercel-php@0.4.0";
-	getEachFiles($file, splitlast(splitlast(__DIR__, "/")[0], "/")[0]);
-	$data["files"] = $file;
-	//$tmpbuildenv = null;
-	foreach ($envs as $key => $value) {
-		//$tmp = null;
-		//$tmp["type"] = "encrypted";
-		//  $tmp["key"] = $key;
-		//$tmp["value"] = $value;
-		//$tmp["target"] = [ "development", "production", "preview" ];
-		//$tmpenv[] = $tmp;
-		$data["env"][$key] = $value;
-		//$data["build"]["env"][$key] = $value;
-		//$tmpbuildenv[] = $key;
-	}
-	//$data["build"]["env"] = $tmpbuildenv;
-	//echo json_encode($data, JSON_PRETTY_PRINT) . "<br>";
-	$response = curl("POST", $url, json_encode($data), $header);
-	return $response;
-}
-
 // POST /v8/projects/:id/env
 function setVercelConfig($envs, $appId, $token)
 {
@@ -302,11 +271,31 @@ function setVercelConfig($envs, $appId, $token)
 		$tmp["value"] = $value;
 		$tmp["target"] = [ "development", "production", "preview" ];
 		$response = curl("POST", $url, json_encode($tmp), $header);
-		echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
+		//echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
 	}
-	return $response;
+	return VercelUpdate($appId, $token);
+	//return $response;
 }
 
+function VercelUpdate($appId, $token, $sourcePath = "")
+{
+	$url = "https://api.vercel.com/v12/now/deployments";
+	$header["Authorization"] = "Bearer " . $token;
+	$header["Content-Type"] = "application/json";
+	$data["name"] = "OneManager";
+	$data["project"] = $appId;
+	$data["target"] = "production";
+	$data["routes"][0]["src"] = "/(.*)";
+	$data["routes"][0]["dest"] = "/api/index.php";
+	$data["functions"]["api/index.php"]["runtime"] = "vercel-php@0.4.0";
+	if ($sourcePath=="") $sourcePath = splitlast(splitlast(__DIR__, "/")[0], "/")[0];
+	getEachFiles($file, $sourcePath);
+	$data["files"] = $file;
+
+	//echo json_encode($data, JSON_PRETTY_PRINT) . "<br>";
+	$response = curl("POST", $url, json_encode($data), $header);
+	return $response;
+}
 
 function getEachFiles(&$file, $base, $path = "")
 {
@@ -351,47 +340,32 @@ function setConfigResponse($response)
 
 function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 'master')
 {
-    $slash = '/';
-    if (strpos(__DIR__, ':')) $slash = '\\';
-    // __DIR__ is xxx/platform
-    $projectPath = splitlast(__DIR__, $slash)[0];
+    $tmppath = '/tmp';
 
     // 从github下载对应tar.gz，并解压
     $url = 'https://github.com/' . $auth . '/' . $project . '/tarball/' . urlencode($branch) . '/';
-    $tarfile = $projectPath . $slash .'github.tar.gz';
+    $tarfile = $tmppath . '/github.tar.gz';
     $githubfile = file_get_contents($url);
     if (!$githubfile) return 0;
     file_put_contents($tarfile, $githubfile);
-    if (splitfirst(PHP_VERSION, '.')[0] > '5') {
         $phar = new PharData($tarfile); // need php5.3, 7, 8
-        $phar->extractTo($projectPath, null, true);//路径 要解压的文件 是否覆盖
-    } else {
-        ob_start();
-        passthru('tar -xzvf ' . $tarfile, $stat);
-        ob_get_clean();
-    }
+        $phar->extractTo($tmppath, null, true);//路径 要解压的文件 是否覆盖
     unlink($tarfile);
 
     $outPath = '';
-    $tmp = scandir($projectPath);
+    $tmp = scandir($tmppath);
     $name = $auth . '-' . $project;
     foreach ($tmp as $f) {
         if ( substr($f, 0, strlen($name)) == $name) {
-            $outPath = $projectPath . $slash . $f;
+            rename($tmppath . '/' . $f, $tmppath . '/api');
+            $outPath = $tmppath . '/api';
             break;
         }
     }
     //error_log1($outPath);
     if ($outPath=='') return 0;
 
-    //unlink($outPath.'/config.php');
-    $response = rename($projectPath . $slash . '.data' . $slash . 'config.php', $outPath . $slash . '.data' . $slash . 'config.php');
-    if (!$response) {
-        $tmp1['code'] = "Move Failed";
-        $tmp1['message'] = "Can not move " . $projectPath . $slash . '.data' . $slash . 'config.php' . " to " . $outPath . $slash . '.data' . $slash . 'config.php';
-        return json_encode($tmp1);
-    }
-    return moveFolder($outPath, $projectPath, $slash);
+    return VercelUpdate($appId, $token, $outPath);
 }
 
 function moveFolder($from, $to, $slash)
