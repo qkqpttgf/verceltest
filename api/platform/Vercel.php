@@ -370,6 +370,7 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     $tmp = scandir($tmppath);
     $name = $auth . '-' . $project;
     foreach ($tmp as $f) {
+	    echo $f . "<br>";
         if ( substr($f, 0, strlen($name)) == $name) {
             rename($tmppath . '/' . $f, $tmppath . '/api');
             $outPath = $tmppath;
