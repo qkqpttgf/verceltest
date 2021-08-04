@@ -300,6 +300,7 @@ function VercelUpdate($appId, $token, $sourcePath = "")
 	$data["routes"][0]["dest"] = "/api/index.php";
 	$data["functions"]["api/index.php"]["runtime"] = "vercel-php@0.4.0";
 	if ($sourcePath=="") $sourcePath = splitlast(splitlast(__DIR__, "/")[0], "/")[0];
+	//echo $sourcePath . "<br>";
 	getEachFiles($file, $sourcePath);
 	$data["files"] = $file;
 
@@ -316,7 +317,7 @@ function getEachFiles(&$file, $base, $path = "")
     while($filename=readdir($handler)) {
         if($filename != '.' && $filename != '..' && $filename != '.git'){
             $fromfile = path_format($base . "/" . $path . "/" . $filename);
-		//echo $fromfile . "<br>";
+		echo $fromfile . "<br>";
             if(is_dir($fromfile)){// 如果读取的某个对象是文件夹，则递归
                 $response = getEachFiles($file, $base, path_format($path . "/" . $filename));
                 if (api_error(setConfigResponse($response))) return $response;
