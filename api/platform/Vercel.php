@@ -269,6 +269,7 @@ function setVercelConfig($envs, $appId, $token)
 	foreach ($result["envs"] as $key => $value) {
 		$existEnvs[$value["key"]] = $value["id"];
 	}
+	$response = null;
 	foreach ($envs as $key => $value) {
 		$tmp = null;
 		$tmp["type"] = "encrypted";
@@ -276,12 +277,12 @@ function setVercelConfig($envs, $appId, $token)
 		$tmp["value"] = $value;
 		$tmp["target"] = [ "development", "production", "preview" ];
 		if (isset($existEnvs[$key])) {
-			if ($value=="") $response = curl("DELETE", $url . "/" . $existEnvs[$key], "", $header);
-			else $response = curl("PATCH", $url . "/" . $existEnvs[$key], json_encode($tmp), $header);
+			if ($value) $response = curl("PATCH", $url . "/" . $existEnvs[$key], json_encode($tmp), $header);
+			else $response = curl("DELETE", $url . "/" . $existEnvs[$key], "", $header);
 		} else {
 			if ($value) $response = curl("POST", $url, json_encode($tmp), $header);
 		}
-		echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
+		//echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
 	}
 	return VercelUpdate($appId, $token);
 	//return $response;
