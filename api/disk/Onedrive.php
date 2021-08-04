@@ -494,7 +494,7 @@ class Onedrive {
                 if (get_class($this)=='Onedrive') $tmp['Driver'] = 'Sharepoint';
                 elseif (get_class($this)=='OnedriveCN') $tmp['Driver'] = 'SharepointCN';
             }
-    echo json_encode($tmp) . "<br>";
+
             $response = setConfigResponse( setConfig($tmp, $this->disktag) );
             if (api_error($response)) {
                 $html = api_error_msg($response);
