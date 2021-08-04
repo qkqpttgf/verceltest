@@ -264,13 +264,23 @@ function setVercelConfig($envs, $appId, $token)
 	$url = "https://api.vercel.com/v8/projects/" . $appId . "/env";
 	$header["Authorization"] = "Bearer " . $token;
 	$header["Content-Type"] = "application/json";
+	$response = curl("GET", $url, "", $header);
+	$result = json_decode($response['body']);
+	foreach ($result["envs"] as $key => $value) {
+		$existEnvs[$value["key"]] = $value["id"];
+	}
 	foreach ($envs as $key => $value) {
 		$tmp = null;
 		$tmp["type"] = "encrypted";
 		$tmp["key"] = $key;
 		$tmp["value"] = $value;
 		$tmp["target"] = [ "development", "production", "preview" ];
-		$response = curl("POST", $url, json_encode($tmp), $header);
+		if (isset($existEnvs[$key])) {
+			if ($value=="") $response = curl("DELETE", $url . "/" . $existEnvs[$key], "", $header);
+			else $response = curl("PATCH", $url . "/" . $existEnvs[$key], json_encode($tmp), $header);
+		} else {
+			$response = curl("POST", $url, json_encode($tmp), $header);
+		}
 		echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
 	}
 	return VercelUpdate($appId, $token);
