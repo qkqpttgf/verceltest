@@ -70,7 +70,9 @@ function getConfig($str, $disktag = '')
 {
     if (isInnerEnv($str)) {
         if ($disktag=='') $disktag = $_SERVER['disktag'];
-        $env = json_decode(getenv($disktag), true);
+        $tmp = getenv($disktag);
+        if (is_array($tmp)) $env = $tmp;
+        else $env = json_decode($tmp, true);
         if (isset($env[$str])) {
             if (isBase64Env($str)) return base64y_decode($env[$str]);
             else return $env[$str];
