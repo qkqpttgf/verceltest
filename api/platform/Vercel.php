@@ -339,8 +339,8 @@ function api_error($response)
 
 function api_error_msg($response)
 {
-    return $response['code'] . '<br>
-' . $response['message'] . '<br>
+    return $response['error']['code'] . '<br>
+' . $response['error']['message'] . '<br>
 <button onclick="location.href = location.href;">'.getconstStr('Refresh').'</button>';
 }
 
