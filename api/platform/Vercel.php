@@ -303,7 +303,7 @@ function VercelUpdate($appId, $token, $sourcePath = "")
 	getEachFiles($file, $sourcePath);
 	$data["files"] = $file;
 
-	//echo json_encode($data, JSON_PRETTY_PRINT) . "<br>";
+	echo json_encode($data, JSON_PRETTY_PRINT) . "<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response["body"];
 }
