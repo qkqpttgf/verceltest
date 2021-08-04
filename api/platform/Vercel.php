@@ -303,7 +303,7 @@ function VercelUpdate($appId, $token, $sourcePath = "")
 	getEachFiles($file, $sourcePath);
 	$data["files"] = $file;
 
-	echo json_encode($data, JSON_PRETTY_PRINT) . "<br>";
+	echo json_encode($data, JSON_PRETTY_PRINT) . " ,data<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response["body"];
 }
@@ -360,11 +360,11 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     if (!$githubfile) return '{"error":{"message":"fail to download from github"}}';
 	echo "down done<br>";
     file_put_contents($tarfile, $githubfile);
-	echo "write done";
+	echo "write done<br>";
         $phar = new PharData($tarfile); // need php5.3, 7, 8
         $phar->extractTo($tmppath, null, true);//路径 要解压的文件 是否覆盖
     unlink($tarfile);
-	echo "extra done";
+	echo "extra done<br>";
 
     $outPath = '';
     $tmp = scandir($tmppath);
@@ -376,6 +376,7 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
             break;
         }
     }
+	echo $outPath . "<br>";
     //error_log1($outPath);
     if ($outPath=='') return '{"error":{"message":"no outpath"}}';
 
