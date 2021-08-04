@@ -373,8 +373,8 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     foreach ($tmp as $f) {
 	    echo $f . "<br>";
         if ( substr($f, 0, strlen($name)) == $name) {
-            rename($tmppath . '/' . $f, $tmppath . '/api');
-            $outPath = $tmppath;
+            rename($tmppath . '/' . $f, $tmppath . "/" . $name . '/api');
+            $outPath = $tmppath . "/" . $name;
             break;
         }
     }
