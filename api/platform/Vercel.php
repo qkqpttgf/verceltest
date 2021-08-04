@@ -358,10 +358,13 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     $tarfile = $tmppath . '/github.tar.gz';
     $githubfile = file_get_contents($url);
     if (!$githubfile) return '{"error":{"message":"fail to download from github"}}';
+	echo "down done<br>";
     file_put_contents($tarfile, $githubfile);
+	echo "write done";
         $phar = new PharData($tarfile); // need php5.3, 7, 8
         $phar->extractTo($tmppath, null, true);//路径 要解压的文件 是否覆盖
     unlink($tarfile);
+	echo "extra done";
 
     $outPath = '';
     $tmp = scandir($tmppath);
