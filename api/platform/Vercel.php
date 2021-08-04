@@ -258,7 +258,7 @@ language:<br>';
     return message($html, $title, 201);
 }
 
-function setVercelConfig($envs, $appId, $token)
+function setVercelConfig1($envs, $appId, $token)
 {
 	$url = "https://api.vercel.com/v12/now/deployments";
 	$header["Authorization"] = "Bearer " . $token;
@@ -288,6 +288,25 @@ function setVercelConfig($envs, $appId, $token)
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response;
 }
+
+// POST /v8/projects/:id/env
+function setVercelConfig($envs, $appId, $token)
+{
+	$url = "https://api.vercel.com/v8/projects/" . $appId . "/env";
+	$header["Authorization"] = "Bearer " . $token;
+	$header["Content-Type"] = "application/json";
+	foreach ($envs as $key => $value) {
+		$tmp = null;
+		$tmp["type"] = "encrypted";
+		$tmp["key"] = $key;
+		$tmp["value"] = $value;
+		$tmp["target"] = [ "development", "production", "preview" ];
+		$response = curl("POST", $url, json_encode($data), $header);
+		echo json_encode($key . ":" . $value . ", " . $response, JSON_PRETTY_PRINT) . "<br>";
+	}
+	return $response;
+}
+
 
 function getEachFiles(&$file, $base, $path = "")
 {
