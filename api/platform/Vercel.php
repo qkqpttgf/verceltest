@@ -369,7 +369,7 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     foreach ($tmp as $f) {
         if ( substr($f, 0, strlen($name)) == $name) {
             rename($tmppath . '/' . $f, $tmppath . '/api');
-            $outPath = $tmppath . '/api';
+            $outPath = $tmppath;
             break;
         }
     }
