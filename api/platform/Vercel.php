@@ -1,7 +1,6 @@
 <?php
 // https://vercel.com/docs/api#endpoints/deployments/create-a-new-deployment
 
-
 function getpath()
 {
     $_SERVER['firstacceptlanguage'] = strtolower(splitfirst(splitfirst($_SERVER['HTTP_ACCEPT_LANGUAGE'],';')[0],',')[0]);
@@ -88,6 +87,7 @@ function setConfig($arr, $disktag = '')
     if ($disktag=='') $disktag = $_SERVER['disktag'];
     $disktags = explode("|",getConfig('disktag'));
     if ($disktag!='') $diskconfig = json_decode(getenv($disktag), true);
+	echo json_encode($diskconfig) . "<br>";
     $tmp = [];
     $indisk = 0;
     $operatedisk = 0;
@@ -118,9 +118,11 @@ function setConfig($arr, $disktag = '')
         }
     }
     if ($indisk) {
+	    echo json_encode($diskconfig) . "<br>";
         $diskconfig = array_filter($diskconfig, 'array_value_isnot_null');
         ksort($diskconfig);
         $tmp[$disktag] = json_encode($diskconfig);
+	    echo json_encode($diskconfig) . "<br>";
     }
     if ($operatedisk) {
         if (isset($arr['disktag_newname']) && $arr['disktag_newname']!='') {
