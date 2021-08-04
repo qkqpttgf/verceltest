@@ -301,7 +301,7 @@ function setVercelConfig($envs, $appId, $token)
 		$tmp["key"] = $key;
 		$tmp["value"] = $value;
 		$tmp["target"] = [ "development", "production", "preview" ];
-		$response = curl("POST", $url, json_encode($data), $header);
+		$response = curl("POST", $url, json_encode($tmp), $header);
 		echo $key . ":" . $value . ", " . json_encode($response, JSON_PRETTY_PRINT) . "<br>";
 	}
 	return $response;
