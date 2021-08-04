@@ -357,7 +357,7 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     $url = 'https://github.com/' . $auth . '/' . $project . '/tarball/' . urlencode($branch) . '/';
     $tarfile = $tmppath . '/github.tar.gz';
     $githubfile = file_get_contents($url);
-    if (!$githubfile) return 0;
+    if (!$githubfile) return '{"error":{"message":"fail to download from github"}}';
     file_put_contents($tarfile, $githubfile);
         $phar = new PharData($tarfile); // need php5.3, 7, 8
         $phar->extractTo($tmppath, null, true);//路径 要解压的文件 是否覆盖
@@ -374,7 +374,7 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
         }
     }
     //error_log1($outPath);
-    if ($outPath=='') return 0;
+    if ($outPath=='') return '{"error":{"message":"no outpath"}}';
 
     return VercelUpdate($appId, $token, $outPath);
 }
