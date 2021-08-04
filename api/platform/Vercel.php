@@ -370,6 +370,7 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     $outPath = '';
     $tmp = scandir($tmppath);
     $name = $auth . '-' . $project;
+    mkdir($name, 0777);
     foreach ($tmp as $f) {
 	    echo $f . "<br>";
         if ( substr($f, 0, strlen($name)) == $name) {
