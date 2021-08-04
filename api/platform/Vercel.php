@@ -304,7 +304,7 @@ function VercelUpdate($appId, $token, $sourcePath = "")
 	getEachFiles($file, $sourcePath);
 	$data["files"] = $file;
 
-	echo json_encode($data, JSON_PRETTY_PRINT) . " ,data<br>";
+	//echo json_encode($data, JSON_PRETTY_PRINT) . " ,data<br>";
 	$response = curl("POST", $url, json_encode($data), $header);
 	return $response["body"];
 }
@@ -317,7 +317,7 @@ function getEachFiles(&$file, $base, $path = "")
     while($filename=readdir($handler)) {
         if($filename != '.' && $filename != '..' && $filename != '.git'){
             $fromfile = path_format($base . "/" . $path . "/" . $filename);
-		echo $fromfile . "<br>";
+		//echo $fromfile . "<br>";
             if(is_dir($fromfile)){// 如果读取的某个对象是文件夹，则递归
                 $response = getEachFiles($file, $base, path_format($path . "/" . $filename));
                 if (api_error(setConfigResponse($response))) return $response;
@@ -359,27 +359,23 @@ function OnekeyUpate($auth = 'qkqpttgf', $project = 'OneManager-php', $branch = 
     $tarfile = $tmppath . '/github.tar.gz';
     $githubfile = file_get_contents($url);
     if (!$githubfile) return '{"error":{"message":"fail to download from github"}}';
-	echo "down done<br>";
     file_put_contents($tarfile, $githubfile);
-	echo "write done<br>";
         $phar = new PharData($tarfile); // need php5.3, 7, 8
         $phar->extractTo($tmppath, null, true);//路径 要解压的文件 是否覆盖
     unlink($tarfile);
-	echo "extra done<br>";
 
     $outPath = '';
     $tmp = scandir($tmppath);
     $name = $auth . '-' . $project;
     mkdir($tmppath . "/" . $name, 0777);
     foreach ($tmp as $f) {
-	    echo $f . "<br>";
         if ( substr($f, 0, strlen($name)) == $name) {
             rename($tmppath . '/' . $f, $tmppath . "/" . $name . '/api');
             $outPath = $tmppath . "/" . $name;
             break;
         }
     }
-	echo $outPath . "<br>";
+	//echo $outPath . "<br>";
     //error_log1($outPath);
     if ($outPath=='') return '{"error":{"message":"no outpath"}}';
 
