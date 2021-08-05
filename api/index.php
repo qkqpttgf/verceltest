@@ -44,7 +44,7 @@ if (isset($_SERVER['USER'])&&$_SERVER['USER']==='qcloud') {
     }
     http_response_code($re['statusCode']);
     echo $re['body'];
-    echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
+    //echo '<pre>'. json_encode($_SERVER, JSON_PRETTY_PRINT).'</pre>';
     //echo '<pre>'. json_encode($_ENV, JSON_PRETTY_PRINT).'</pre>';
     //$header["Authorization"] = "Bearer " . getConfig('APIKey');
 	//$header["Content-Type"] = "application/json";
