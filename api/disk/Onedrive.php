@@ -1013,10 +1013,10 @@ class Onedrive {
             }
         }
         curl_close($ch);
-        /*error_log1($response['stat'].'
+        error_log1($response['stat'].'
     '.$response['body'].'
     '.$url.'
-    ');*/
+    ');
         return $response;
     }
 
