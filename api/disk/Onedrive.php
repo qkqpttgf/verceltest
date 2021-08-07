@@ -348,7 +348,7 @@ class Onedrive {
     public function Delete($file) {
         $filename = spurlencode($file['name']);
         $filename = path_format($file['path'] . '/' . $filename);
-           //error_log1($filename);
+           error_log1($filename);
         $result = $this->MSAPI('DELETE', $filename);
         //error_log1("Result: " . $result['body']);
         return output(json_encode($this->files_format(json_decode($result['body'], true))), $result['stat']);
