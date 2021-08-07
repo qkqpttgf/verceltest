@@ -352,7 +352,7 @@ class Onedrive {
         $result = $this->MSAPI('DELETE', $filename);
         error_log1("Result: " . $result['body']);
         return output(json_encode($this->files_format(json_decode($result['body'], true))), $result['stat']);
-        return output($result['body'], $result['stat']);
+        //return output($result['body'], $result['stat']);
     }
     public function Encrypt($folder, $passfilename, $pass) {
         $filename = path_format($folder['path'] . '/' . urlencode($passfilename));
